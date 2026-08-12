@@ -30,6 +30,18 @@
       "stack": "gvisor",
       "dns_mode": "hijack",
       "auto_route": true,
+      "route_exclude_address": [
+        "10.0.0.0/8",
+        "100.64.0.0/10",
+        "172.16.0.0/12",
+        "192.168.0.0/16",
+        "169.254.0.0/16",
+        "224.0.0.0/4",
+        "255.255.255.255/32",
+        "fc00::/7",
+        "fe80::/10",
+        "ff00::/8"
+      ],
       "strict_route": true,
       "auto_redirect": true,
       "include_uid": [],
@@ -268,6 +280,7 @@
       "interrupt_exist_connections": true,
       "outbounds": [
         "🚀 节点选择",
+        "⚡ 自动选择",
         "🎯 Direct",
         "🐟 漏网之鱼"
       ]
@@ -340,16 +353,6 @@
         "protocol": "dns"
       },
       {
-        "action": "reject",
-        "protocol": "quic"
-      },
-      {
-        "action": "reject",
-        "rule_set": [
-          "Category-Ads"
-        ]
-      },
-      {
         "action": "route",
         "clash_mode": "direct",
         "outbound": "🎯 Direct"
@@ -372,6 +375,37 @@
           "GeoIP-Private"
         ],
         "outbound": "🎯 Direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoSite-CN"
+        ],
+        "outbound": "🎯 Direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoLocation-CN"
+        ],
+        "outbound": "🎯 Direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoIP-CN"
+        ],
+        "outbound": "🎯 Direct"
+      },
+      {
+        "action": "reject",
+        "rule_set": [
+          "Category-Ads"
+        ]
+      },
+      {
+        "action": "reject",
+        "protocol": "quic"
       },
       {
         "action": "route",
@@ -474,27 +508,6 @@
           "ChinaMedia"
         ],
         "outbound": "📺 China Media"
-      },
-      {
-        "action": "route",
-        "rule_set": [
-          "GeoLocation-CN"
-        ],
-        "outbound": "🎯 Direct"
-      },
-      {
-        "action": "route",
-        "rule_set": [
-          "GeoSite-CN"
-        ],
-        "outbound": "🎯 Direct"
-      },
-      {
-        "action": "route",
-        "rule_set": [
-          "GeoIP-CN"
-        ],
-        "outbound": "🎯 Direct"
       },
       {
         "action": "route",
@@ -800,10 +813,23 @@
         "server": "223.5.5.5"
       },
       {
+        "tag": "Local-DNS-Resolver",
+        "type": "udp",
+        "server_port": 53,
+        "server": "223.5.5.5"
+      },
+      {
         "tag": "Remote-DNS",
         "type": "tls",
         "detour": "🚀 节点选择",
         "server_port": 853,
+        "server": "8.8.8.8"
+      },
+      {
+        "tag": "Remote-DNS-Resolver",
+        "type": "udp",
+        "detour": "🚀 节点选择",
+        "server_port": 53,
         "server": "8.8.8.8"
       }
     ],
@@ -817,6 +843,13 @@
         "action": "route",
         "clash_mode": "global",
         "server": "Remote-DNS"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoSite-Private"
+        ],
+        "server": "Local-DNS"
       },
       {
         "action": "route",
@@ -838,30 +871,10 @@
           "GeoLocation-!CN"
         ],
         "server": "Remote-DNS"
-      },
-      {
-        "action": "evaluate",
-        "server": "Remote-DNS"
-      },
-      {
-        "match_response": true,
-        "ip_is_private": true,
-        "action": "respond"
-      },
-      {
-        "match_response": true,
-        "rule_set": [
-          "GeoIP-CN"
-        ],
-        "action": "respond"
-      },
-      {
-        "action": "route",
-        "server": "Remote-DNS"
       }
     ],
-    "final": "Remote-DNS",
-    "reverse_mapping": true,
+    "final": "Local-DNS-Resolver",
+    "independent_cache": true,
     "strategy": "prefer_ipv4"
   },
   "endpoints": []
