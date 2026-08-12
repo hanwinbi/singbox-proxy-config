@@ -28,12 +28,11 @@
         "fdfe:dcba:9876::1/126"
       ],
       "mtu": 1420,
-      "stack": "system",
-      "sniff": true,
-      "sniff_override_destination": false,
+      "stack": "gvisor",
+      "dns_mode": "hijack",
       "auto_route": true,
-      "strict_route": false,
-      "auto_redirect": false,
+      "strict_route": true,
+      "auto_redirect": true,
       "route_exclude_address": [
         "10.0.0.0/8",
         "100.64.0.0/10",
@@ -344,6 +343,12 @@
   ],
   "route": {
     "rules": [
+      {
+        "action": "sniff",
+        "inbound": [
+          "tun-in"
+        ]
+      },
       {
         "action": "hijack-dns",
         "protocol": "dns"
@@ -831,10 +836,18 @@
     ],
     "rules": [
       {
+        "action": "predefined",
+        "ip_version": 6,
+        "rule_set": [
+          "GeoSite-Private",
+          "GeoLocation-CN",
+          "GeoSite-CN"
+        ]
+      },
+      {
         "action": "route",
         "clash_mode": "direct",
-        "server": "Local-DNS",
-        "domain_strategy": "ipv4_only"
+        "server": "Local-DNS"
       },
       {
         "action": "route",
@@ -844,12 +857,23 @@
       {
         "action": "route",
         "rule_set": [
-          "GeoSite-Private",
-          "GeoLocation-CN",
+          "GeoSite-Private"
+        ],
+        "server": "Local-DNS"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoLocation-CN"
+        ],
+        "server": "Local-DNS"
+      },
+      {
+        "action": "route",
+        "rule_set": [
           "GeoSite-CN"
         ],
-        "server": "Local-DNS",
-        "domain_strategy": "ipv4_only"
+        "server": "Local-DNS"
       },
       {
         "action": "route",
@@ -860,7 +884,8 @@
       }
     ],
     "final": "Local-DNS-Resolver",
-    "optimistic": true
+    "optimistic": true,
+    "strategy": "prefer_ipv4"
   },
   "endpoints": []
 }
