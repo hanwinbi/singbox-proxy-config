@@ -836,15 +836,6 @@
     ],
     "rules": [
       {
-        "action": "predefined",
-        "ip_version": 6,
-        "rule_set": [
-          "GeoSite-Private",
-          "GeoLocation-CN",
-          "GeoSite-CN"
-        ]
-      },
-      {
         "action": "route",
         "clash_mode": "direct",
         "server": "Local-DNS"
@@ -885,7 +876,7 @@
     ],
     "final": "Local-DNS-Resolver",
     "optimistic": true,
-    "strategy": "prefer_ipv4"
+    "strategy": "ipv4_only"
   },
   "endpoints": []
 }
